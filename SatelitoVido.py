@@ -225,24 +225,25 @@ def process_image(image_file_name):
     # which all OpenCV installations can process.
     # On a Linux system, installing libopenjp2-tools will satisfy
     # this dependency.
-    system("opj_decompress -i {0}.jp2 -o {0}.ppm >> /dev/null".format(
-        image_file_name))
-    image_data = cv2.imread(image_file_name + '.ppm', 0)
     # Here we can use the SURF algorithm to pick out features.
     # Note that you'll need to have a version of OpenCV with the
     # contrib section installed; using the opencv-contrib-python
     # package satisfies this dependency.
     try:
+        system("opj_decompress -i {0}.jp2 -o {0}.ppm >> /dev/null".format(
+            image_file_name))
+        image_data = cv2.imread(image_file_name + '.ppm', 0)
         surf = cv2.xfeatures2d.SURF_create()
         (kps, descs) = surf.detectAndCompute(image_data, None)
         print("# kps: {0}, descriptors: {1}".format(len(kps), descs.shape))
         feature_image = cv2.drawKeypoints(image_data, kps,
                                           None, (255, 0, 0), 4)
-        cv2.imshow(feature_image), cv2.show()
+        cv2.imshow("satellite image", feature_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
     except Exception as err:
         print("Unable to use feature detection: {0}".format(err))
+        return False
     return True
 
 
